@@ -108,7 +108,7 @@ tbody td {
     border-bottom: 1px solid #ddd;
 }
 
-.action-btn{
+.action-btn {
     width: 50px;
     background: #ff3b3b;
     color: white;
@@ -123,23 +123,42 @@ tbody td {
     background: #d60000;
 }
 
+.back-btn{
+    width: 70px;
+    
+}
+
+
+
+
+
+
+
+
+
+
+
 /* Responsive */
 @media (max-width: 970px) {
-    .form-box, .table-box {
+
+    .form-box,
+    .table-box {
         width: 100%;
         margin-bottom: 20px;
     }
 }
 
-@media(max-width:1250px){
-    table td{
+@media(max-width:1250px) {
+    table td {
         font-size: 12px;
 
-        .action-btn{
-           font-size: 12px; 
+        .action-btn {
+            font-size: 12px;
         }
     }
-}/* Extra Responsive Fixes */
+}
+
+/* Extra Responsive Fixes */
 
 @media(max-width: 768px) {
 
@@ -148,7 +167,7 @@ tbody td {
         align-items: center;
     }
 
-    .form-box, 
+    .form-box,
     .table-box {
         width: 100%;
         margin-bottom: 20px;
@@ -221,6 +240,15 @@ tbody td {
     }
 }
 
+@media(max-width:400px) {
+    table td {
+        .action-btn {
+            font-size: 7px;
+            margin-top: 0px;
+        }
+    }
+}
+
 @media(max-width: 360px) {
 
     header h2 {
@@ -238,14 +266,10 @@ tbody td {
         font-size: 12px;
     }
 
-    thead th, tbody td {
+    thead th,
+    tbody td {
         font-size: 8px;
         padding: 4px;
     }
 
-    .action-btn {
-        width: 30px;
-        height: 20px;
-        font-size: 7px;
-    }
 }
