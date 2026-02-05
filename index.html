@@ -10,6 +10,10 @@
 
 <body>
 
+    <!-- <header>
+        <h2>ABCD LTD.</h2>
+    </header> -->
+
     <div class="container">
 
         <div class="form-box">
@@ -22,7 +26,7 @@
             <input type="tel" id="number" placeholder="mobile number">
 
             <label>Date Of Birth</label>
-            <input type="datetime-local" id="Date">
+            <input type="date" id="Date" placeholder="Date">
 
             <label>Work Time</label>
             <input type="text" id="department" placeholder="Select">
@@ -30,92 +34,187 @@
             <select id="selectdepartment">
                 <option value="">-- Select Time --</option>
                 <option value="Full time">Full time</option>
-                <option value="Part time">Part time</option>
+                <option value="Part time">Part time </option>
             </select>
 
             <label>Address</label>
-            <textarea id="address" style="width: 100%; padding-left: 10px; padding-top: 5px;" placeholder="City / Village"></textarea>
+            <textarea style="width: 100%; height: 50px; padding-left: 20px; padding-top: 10px;" name="" id="address"
+                placeholder="City / Village"></textarea>
 
             <label>Email</label>
             <input type="email" id="email" placeholder="email">
 
             <button id="saveBtn">Save Employee</button>
-            <a href="update.html"><button type="button">Update</button></a>
+            <a href="update.html"><button>Update</button></a>
+        </div>
+
+        <div class="table-box" style="display: none;">
+            <h3>Employee List</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Department</th>
+                        <th>Salary</th>
+                        <th>Join Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTable"></tbody>
+            </table>
         </div>
 
     </div>
 
-<script>
+    <!-- EmailJS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
-let nameField = document.getElementById("name");
-let numberField = document.getElementById("number");
-let DateField = document.getElementById("Date");
-let departmentField = document.getElementById("department");
-let selectDepartment = document.getElementById("selectdepartment");
-let addressField = document.getElementById("address");
-let emailField = document.getElementById("email");
-let saveBtn = document.getElementById("saveBtn");
+    <!-- EmailJS Init -->
+    <script>
+        (function () {
+            emailjs.init("Ro3VTsYRjvQowjIjg"); // <-- Replace with your Public Key
+        })();
+    </script>
 
-let employees = JSON.parse(localStorage.getItem("employees")) || [];
-let editIndex = null;
+    <script>
+        // Form fields
+        let nameField = document.getElementById("name");
+        let numberField = document.getElementById("number");
+        let DateField = document.getElementById("Date");
+        let departmentField = document.getElementById("department");
+        let selectDepartment = document.getElementById("selectdepartment");
+        let salaryField = document.getElementById("address");
+        let joinField = document.getElementById("email");
+        let saveBtn = document.getElementById("saveBtn");
+        let employeeTable = document.getElementById("employeeTable");
+
+        let employees = JSON.parse(localStorage.getItem("employees")) || [];
+        let editIndex = null;
+
+        selectDepartment.addEventListener("change", function () {
+            departmentField.value = this.value;
+        });
+
+        function showData() {
+            employeeTable.innerHTML = "";
+            employees.forEach((emp, index) => {
+                employeeTable.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${emp.name}</td>
+                        <td>${emp.number}</td>
+                        <td>${emp.Date}</td>
+                        <td>${emp.department}</td>
+                        <td>${emp.address}</td>
+                        <td>${emp.email}</td>
+                        <td>
+                            <button class="action-btn" style="background-color: green;" onclick="editEmployee(${index})">Update</button>
+                            <button class="action-btn" onclick="deleteEmployee(${index})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            nameField.value = "";
+            numberField.value = "";
+            DateField.value = "";
+            departmentField.value = "";
+            salaryField.value = "";
+            joinField.value = "";
+            saveBtn.innerText = "Save";
+        }
+
+        saveBtn.addEventListener("click", () => {
+            let name = nameField.value;
+            let number = numberField.value;
+            let Date = DateField.value;
+            let department = departmentField.value;
+            let address = salaryField.value;
+            let email = joinField.value;
+
+            if (!name || !number || !department || !Date || !address || !email){
+                alert("Please fill all details!");
+                return;
+            }
+
+            let isUpdate = editIndex !== null;
+
+            if (isUpdate) {
+                employees[editIndex] = { name, number, Date,  department, address, email };
+                editIndex = null;
+            } else {
+                employees.push({ name, number, Date,  department, address, email });
+            }
+
+            localStorage.setItem("employees", JSON.stringify(employees));
+            showData();
+
+            // **Send email with different Service & Template for New vs Update**
+            if (isUpdate) {
+                // UPDATE email
+                emailjs.send("service_update", "template_f2aqr3f", {
+                    name, number, Date,  department, address, email, messageType: "Employee Updated"
+                })
+                    .then(() => alert("Update email sent!"))
+                    .catch(err => alert("Failed to send update email!"));
+            } else {
+                // NEW email
+                emailjs.send("service_naoycqy", "template_mee34dc", {
+                    name, number, Date,  department, address, email, messageType: "New Employee Added"
+                })
+                    .then(() => alert("New add successful email sent!"))
+                    .catch(err => alert("Failed to send new employee email!"));
+            }
+        });
+
+        function editEmployee(index) {
+            let emp = employees[index];
+            nameField.value = emp.name;
+            numberField.value = emp.number;
+            DateField.value = emp.Date;
+            departmentField.value = emp.department;
+            salaryField.value = emp.address;
+            joinField.value = emp.email;
+            editIndex = index;
+            saveBtn.innerText = "Update Employee";
+        }
+
+        function deleteEmployee(index) {
+            if (confirm("Are you sure you want to delete this employee?")) {
+                employees.splice(index, 1);
+                localStorage.setItem("employees", JSON.stringify(employees));
+                showData();
+            }
+        }
 
 
-// Select dropdown sync
-selectDepartment.addEventListener("change", function () {
-    departmentField.value = this.value;
-});
+        showData();
+    </script>
 
+    <script>
+        // Check if coming from update page
+        let storedEditIndex = localStorage.getItem("editIndex");
 
-// -------- EDIT LOAD --------
-let storedEditIndex = localStorage.getItem("editIndex");
+        if (storedEditIndex !== null) {
+            let emp = employees[storedEditIndex];
 
-if (storedEditIndex !== null) {
+            nameField.value = emp.name;
+            numberField.value = emp.number;
+            DateField.value = emp.Date;
+            departmentField.value = emp.department;
+            salaryField.value = emp.address;
+            joinField.value = emp.email;
 
-    storedEditIndex = Number(storedEditIndex);
+            editIndex = storedEditIndex;
+            saveBtn.innerText = "Update Employee";
 
-    let emp = employees[storedEditIndex];
+            localStorage.removeItem("editIndex");
+        }
 
-    nameField.value = emp.name;
-    numberField.value = emp.number;
-    DateField.value = emp.Date ? emp.Date : "";
-    departmentField.value = emp.department;
-    addressField.value = emp.address;
-    emailField.value = emp.email;
-
-    editIndex = storedEditIndex;
-    saveBtn.innerText = "Update Employee";
-
-    localStorage.removeItem("editIndex");
-}
-
-
-// -------- SAVE / UPDATE --------
-saveBtn.addEventListener("click", () => {
-
-let name = nameField.value.trim();
-let number = numberField.value.trim();
-let Date = DateField.value.trim();
-let department = departmentField.value.trim();
-let address = addressField.value.trim();
-let email = emailField.value.trim();
-
-if (!name || !number || !Date || !department || !address || !email) {
-    alert("Please fill all details!");
-    return;
-}
-
-if (editIndex !== null) {
-    employees[editIndex] = { name, number, Date, department, address, email };
-} else {
-    employees.push({ name, number, Date, department, address, email });
-}
-
-localStorage.setItem("employees", JSON.stringify(employees));
-window.location.href = "update.html";
-
-});
-
-</script>
+    </script>
 
 </body>
+
 </html>
