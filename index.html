@@ -1,49 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TATA Employee Management</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <header>
-        <h2>Forever Living Producct LTD.</h2>
-    </header>
+    <!-- <header>
+        <h2>ABCD LTD.</h2>
+    </header> -->
 
     <div class="container">
 
         <div class="form-box">
             <h3>Add New</h3>
 
-            <label>Employee Name</label>
+            <label>Name</label>
             <input type="text" id="name" placeholder="Name">
 
             <label>Number</label>
             <input type="tel" id="number" placeholder="mobile number">
 
-            <label>Department</label>
+            <label>Work Time</label>
             <input type="text" id="department" placeholder="Select">
 
             <select id="selectdepartment">
-                <option value="">-- Select Department --</option>
-                <option value="Software Development">Software Development</option>
-                <option value="Business Analyst">Business Analyst</option>
-                <option value="Project Management">Project Management</option>
-                <option value="Manufacturing">Manufacturing</option>
+                <option value="">-- Select Time --</option>
+                <option value="Full time">Full time</option>
+                <option value="Part time">Part time </option>
             </select>
 
             <label>Address</label>
-            <textarea style="width: 100%; height: 50px; padding-left: 20px; padding-top: 10px;" name="" id="address" placeholder="address"></textarea>
+            <textarea style="width: 100%; height: 50px; padding-left: 20px; padding-top: 10px;" name="" id="address"
+                placeholder="address"></textarea>
 
             <label>Email</label>
             <input type="email" id="email" placeholder="email">
 
             <button id="saveBtn">Save Employee</button>
+            <a href="update.html"><button>Update</button></a>
         </div>
 
-        <div class="table-box">
+        <div class="table-box" style="display: none;">
             <h3>Employee List</h3>
             <table>
                 <thead>
@@ -68,7 +70,7 @@
 
     <!-- EmailJS Init -->
     <script>
-        (function() {
+        (function () {
             emailjs.init("Ro3VTsYRjvQowjIjg"); // <-- Replace with your Public Key
         })();
     </script>
@@ -87,7 +89,7 @@
         let employees = JSON.parse(localStorage.getItem("employees")) || [];
         let editIndex = null;
 
-        selectDepartment.addEventListener("change", function() {
+        selectDepartment.addEventListener("change", function () {
             departmentField.value = this.value;
         });
 
@@ -115,7 +117,7 @@
             departmentField.value = "";
             salaryField.value = "";
             joinField.value = "";
-            saveBtn.innerText = "Save Employee";
+            saveBtn.innerText = "Save";
         }
 
         saveBtn.addEventListener("click", () => {
@@ -145,18 +147,18 @@
             // **Send email with different Service & Template for New vs Update**
             if (isUpdate) {
                 // UPDATE email
-                emailjs.send("service_update", "template_f2aqr3f", { 
-                    name, number, department, address, email, messageType: "Employee Updated" 
+                emailjs.send("service_update", "template_f2aqr3f", {
+                    name, number, department, address, email, messageType: "Employee Updated"
                 })
-                .then(() => alert("Update email sent!"))
-                .catch(err => alert("Failed to send update email!"));
+                    .then(() => alert("Update email sent!"))
+                    .catch(err => alert("Failed to send update email!"));
             } else {
                 // NEW email
-                emailjs.send("service_naoycqy", "template_mee34dc", { 
-                    name, number, department, address, email, messageType: "New Employee Added" 
+                emailjs.send("service_naoycqy", "template_mee34dc", {
+                    name, number, department, address, email, messageType: "New Employee Added"
                 })
-                .then(() => alert("New employee email sent!"))
-                .catch(err => alert("Failed to send new employee email!"));
+                    .then(() => alert("New add successful email sent!"))
+                    .catch(err => alert("Failed to send new employee email!"));
             }
         });
 
@@ -183,5 +185,27 @@
         showData();
     </script>
 
+    <script>
+        // Check if coming from update page
+        let storedEditIndex = localStorage.getItem("editIndex");
+
+        if (storedEditIndex !== null) {
+            let emp = employees[storedEditIndex];
+
+            nameField.value = emp.name;
+            numberField.value = emp.number;
+            departmentField.value = emp.department;
+            salaryField.value = emp.address;
+            joinField.value = emp.email;
+
+            editIndex = storedEditIndex;
+            saveBtn.innerText = "Update Employee";
+
+            localStorage.removeItem("editIndex");
+        }
+
+    </script>
+
 </body>
+
 </html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="table-box">
+        <h3>Employee List</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Department</th>
+                    <th>Salary</th>
+                    <th>Join Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="employeeTable"></tbody>
+        </table>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- EmailJS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+    <!-- EmailJS Init -->
+    <script>
+        (function () {
+            emailjs.init("Ro3VTsYRjvQowjIjg"); // <-- Replace with your Public Key
+        })();
+    </script>
+
+
+    <script>
+        let employeeTable = document.getElementById("employeeTable");
+        let employees = JSON.parse(localStorage.getItem("employees")) || [];
+
+        function showData() {
+            employeeTable.innerHTML = "";
+
+            employees.forEach((emp, index) => {
+                employeeTable.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${emp.name}</td>
+                    <td>${emp.number}</td>
+                    <td>${emp.department}</td>
+                    <td>${emp.address}</td>
+                    <td>${emp.email}</td>
+                    <td>
+                        <button class="action-btn" style="background-color: green;" onclick="updateEmployee(${index})">Update</button>
+                        <button class="action-btn" onclick="deleteEmployee(${index})">Delete</button>
+                    </td>
+                </tr>
+            `;
+            });
+        }
+
+        function updateEmployee(index) {
+            localStorage.setItem("editIndex", index);
+            window.location.href = "index.html";
+        }
+
+        function deleteEmployee(index) {
+            if (confirm("Are you sure you want to delete?")) {
+                employees.splice(index, 1);
+                localStorage.setItem("employees", JSON.stringify(employees));
+                showData();
+            }
+        }
+
+        showData();
+    </script>
+
+
+
+</body>
+
+</html>
